@@ -1,98 +1,91 @@
 body {
-  font-family: 'Vazirmatn', sans-serif;
   margin: 0;
-  padding: 0;
+  font-family: 'Vazirmatn', sans-serif;
   transition: background-color 0.3s, color 0.3s;
 }
 
-.light {
-  background-color: #f0f0f0;
-  color: #000;
-}
-
-.dark {
+body.dark {
   background-color: #121212;
-  color: #fff;
+  color: white;
 }
 
-/* نوار بالا */
+body.light {
+  background-color: #f5f5f5;
+  color: black;
+}
+
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 20px;
+  padding: 1rem;
+  font-size: 1.5rem;
   background-color: inherit;
-  border-bottom: 1px solid #444;
-  font-weight: bold;
-  font-size: 20px;
+  border-bottom: 1px solid gray;
 }
 
-.theme-toggle {
+.icon-btn {
+  font-size: 1.5rem;
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 22px;
   color: inherit;
 }
 
-.chat-container {
-  max-width: 600px;
-  margin: auto;
-  padding: 20px;
-}
-
 .chat-box {
-  border-radius: 12px;
-  padding: 10px;
-  height: 400px;
+  padding: 1rem;
+  height: 70vh;
   overflow-y: auto;
-  margin-bottom: 10px;
-  background-color: inherit;
   display: flex;
   flex-direction: column;
+  gap: 10px;
 }
 
 .message {
-  padding: 10px;
+  padding: 10px 14px;
   border-radius: 12px;
-  margin: 5px 0;
   max-width: 80%;
-  line-height: 1.5;
-  word-wrap: break-word;
+  width: fit-content;
 }
 
-.user {
-  background-color: #ccc;
+.message.user {
+  background-color: #555;
   align-self: flex-end;
-  text-align: right;
-  color: #000;
-}
-
-.bot {
-  background-color: #4caf50;
   color: white;
-  align-self: flex-start;
-  text-align: left;
 }
 
-.input-container {
+.message.bot {
+  background-color: #eee;
+  align-self: flex-start;
+  color: black;
+}
+
+body.dark .message.bot {
+  background-color: #333;
+  color: white;
+}
+
+.input-box {
   display: flex;
+  padding: 1rem;
   gap: 10px;
-  margin-top: 10px;
+  background-color: inherit;
 }
 
 input[type="text"] {
   flex: 1;
   padding: 10px;
-  border-radius: 12px;
-  border: 1px solid #ccc;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
 }
 
 button {
-  padding: 10px 20px;
-  border-radius: 12px;
+  padding: 10px 16px;
   border: none;
-  background-color: #4caf50;
-  color: white;
+  border-radius: 8px;
+  font-size: 1rem;
   cursor: pointer;
+  background-color: #00b894;
+  color: white;
 }
