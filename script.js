@@ -32,12 +32,7 @@ function sendMessage() {
   input.value = '';
 }
 
-const themeToggle = document.getElementById('themeToggle');
-themeToggle.onclick = () => {
-  document.body.classList.toggle('dark');
-  document.body.classList.toggle('light');
-};
-document.body.classList.add('dark');
+// تغییر تم
 const themeToggle = document.getElementById('themeToggle');
 themeToggle.onclick = () => {
   document.body.classList.toggle('dark');
@@ -46,3 +41,7 @@ themeToggle.onclick = () => {
   const isDark = document.body.classList.contains('dark');
   themeToggle.textContent = isDark ? '🌙' : '☀️';
 };
+
+// مقدار اولیه: تاریک
+document.body.classList.add('dark');
+themeToggle.textContent = '🌙';
