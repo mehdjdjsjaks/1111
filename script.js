@@ -17,7 +17,7 @@ function addMessage(text, sender) {
 
 function getBotResponse(input) {
   const msg = input.toLowerCase();
-  if (msg.includes('سلام')) return 'سلام! حالت چطوره؟';
+  if (msg.includes('سلام')) return 'hello youre naim is mehdi irani';
   if (msg.includes('خوبی')) return 'من عالی‌ام، ممنون که پرسیدی!';
   if (msg.includes('اسمت چیه')) return 'من Axcel هستم، دستیار هوشمند تو!';
   if (msg.includes('خداحافظ')) return 'فعلاً! مراقب خودت باش.';
