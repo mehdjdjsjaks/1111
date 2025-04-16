@@ -15,6 +15,26 @@ body {
   color: #fff;
 }
 
+/* نوار بالا */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background-color: inherit;
+  border-bottom: 1px solid #444;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.theme-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 22px;
+  color: inherit;
+}
+
 .chat-container {
   max-width: 600px;
   margin: auto;
@@ -22,13 +42,14 @@ body {
 }
 
 .chat-box {
-  border: 1px solid #ccc;
   border-radius: 12px;
   padding: 10px;
   height: 400px;
   overflow-y: auto;
   margin-bottom: 10px;
   background-color: inherit;
+  display: flex;
+  flex-direction: column;
 }
 
 .message {
@@ -37,12 +58,14 @@ body {
   margin: 5px 0;
   max-width: 80%;
   line-height: 1.5;
+  word-wrap: break-word;
 }
 
 .user {
   background-color: #ccc;
   align-self: flex-end;
   text-align: right;
+  color: #000;
 }
 
 .bot {
@@ -55,6 +78,7 @@ body {
 .input-container {
   display: flex;
   gap: 10px;
+  margin-top: 10px;
 }
 
 input[type="text"] {
@@ -71,9 +95,4 @@ button {
   background-color: #4caf50;
   color: white;
   cursor: pointer;
-}
-
-.toggle-container {
-  text-align: center;
-  margin-top: 10px;
 }
