@@ -1,3 +1,11 @@
+let voices = [];
+let voicesReady = false;
+
+window.speechSynthesis.onvoiceschanged = () => {
+  voices = speechSynthesis.getVoices();
+  voicesReady = true;
+};
+
 function addMessage(text, sender) {
   const chatBox = document.getElementById('chatBox');
   const msg = document.createElement('div');
@@ -17,12 +25,18 @@ function getBotResponse(input) {
 }
 
 function speak(text) {
+  if (!voicesReady) {
+    setTimeout(() => speak(text), 500); // صبر کن تا صداها بیاد
+    return;
+  }
+
   const msg = new SpeechSynthesisUtterance(text);
   msg.lang = 'fa-IR';
-  const voices = speechSynthesis.getVoices();
+
   const faVoice = voices.find(v => v.lang === 'fa-IR' || v.name.includes('Google فارسی'));
   if (faVoice) msg.voice = faVoice;
   else console.warn('صدای فارسی پیدا نشد!');
+
   speechSynthesis.speak(msg);
 }
 
@@ -37,16 +51,10 @@ function sendMessage() {
   input.value = '';
 }
 
-// فعال‌سازی صداها
-window.speechSynthesis.onvoiceschanged = () => {
-  speechSynthesis.getVoices(); // فقط صداها رو بارگذاری کنه
-};
-
 // حالت تاریک و روشن
 const themeToggle = document.getElementById('themeToggle');
 themeToggle.onclick = () => {
   document.body.classList.toggle('dark');
   document.body.classList.toggle('light');
 };
-// حالت پیش‌فرض تاریک
 document.body.classList.add('dark');
