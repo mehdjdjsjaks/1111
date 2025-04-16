@@ -1,11 +1,3 @@
-let voices = [];
-let voicesReady = false;
-
-window.speechSynthesis.onvoiceschanged = () => {
-  voices = speechSynthesis.getVoices();
-  voicesReady = true;
-};
-
 function addMessage(text, sender) {
   const chatBox = document.getElementById('chatBox');
   const msg = document.createElement('div');
@@ -17,7 +9,7 @@ function addMessage(text, sender) {
 
 function getBotResponse(input) {
   const msg = input.toLowerCase();
-  if (msg.includes('سلام')) return 'hello youre naim is mehdi irani';
+  if (msg.includes('سلام')) return 'سلام! حالت چطوره؟';
   if (msg.includes('خوبی')) return 'من عالی‌ام، ممنون که پرسیدی!';
   if (msg.includes('اسمت چیه')) return 'من Axcel هستم، دستیار هوشمند تو!';
   if (msg.includes('خداحافظ')) return 'فعلاً! مراقب خودت باش.';
@@ -25,19 +17,8 @@ function getBotResponse(input) {
 }
 
 function speak(text) {
-  if (!voicesReady) {
-    setTimeout(() => speak(text), 500); // صبر کن تا صداها بیاد
-    return;
-  }
-
-  const msg = new SpeechSynthesisUtterance(text);
-  msg.lang = 'fa-IR';
-
-  const faVoice = voices.find(v => v.lang === 'fa-IR' || v.name.includes('Google فارسی'));
-  if (faVoice) msg.voice = faVoice;
-  else console.warn('صدای فارسی پیدا نشد!');
-
-  speechSynthesis.speak(msg);
+  const audio = new Audio(`https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=fa&client=tw-ob`);
+  audio.play();
 }
 
 function sendMessage() {
@@ -51,7 +32,6 @@ function sendMessage() {
   input.value = '';
 }
 
-// حالت تاریک و روشن
 const themeToggle = document.getElementById('themeToggle');
 themeToggle.onclick = () => {
   document.body.classList.toggle('dark');
