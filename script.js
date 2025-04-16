@@ -16,11 +16,6 @@ function getBotResponse(input) {
   return 'متوجه نشدم، لطفاً واضح‌تر بپرس!';
 }
 
-function speak(text) {
-  const audio = new Audio(`https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=fa&client=tw-ob`);
-  audio.play();
-}
-
 function sendMessage() {
   const input = document.getElementById('userInput');
   const text = input.value.trim();
@@ -28,20 +23,13 @@ function sendMessage() {
   addMessage(text, 'user');
   const response = getBotResponse(text);
   addMessage(response, 'bot');
-  speak(response);
   input.value = '';
 }
 
-// تغییر تم
 const themeToggle = document.getElementById('themeToggle');
 themeToggle.onclick = () => {
-  document.body.classList.toggle('dark');
-  document.body.classList.toggle('light');
-
   const isDark = document.body.classList.contains('dark');
-  themeToggle.textContent = isDark ? '🌙' : '☀️';
+  document.body.classList.toggle('dark', !isDark);
+  document.body.classList.toggle('light', isDark);
+  themeToggle.textContent = isDark ? '☀️' : '🌙';
 };
-
-// مقدار اولیه: تاریک
-document.body.classList.add('dark');
-themeToggle.textContent = '🌙';
