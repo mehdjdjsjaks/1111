@@ -5,7 +5,6 @@ const ctx = canvas.getContext('2d');
 const zoomDisplay = document.getElementById('zoomDisplay');
 const flash = document.getElementById('flash');
 const permissionRequest = document.getElementById('permissionRequest');
-const requestPermissionBtn = document.getElementById('requestPermission');
 const fullscreenPreview = document.getElementById('fullscreenPreview');
 const previewImage = document.getElementById('previewImage');
 
@@ -22,48 +21,62 @@ const closePreviewBtn = document.getElementById('closePreview');
 let currentStream = null;
 let currentZoom = 1;
 const maxZoom = 100;
-let facingMode = 'environment'; // دوربین پشتی به طور پیش‌فرض
+let facingMode = 'environment';
 let isFrontCamera = false;
 
-// درخواست مجوز دسترسی
-function showPermissionRequest() {
-    permissionRequest.style.display = 'flex';
-}
-
-function hidePermissionRequest() {
-    permissionRequest.style.display = 'none';
-}
+// شروع خودکار دوربین بعد از لود صفحه
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        await startCamera();
+    } catch (error) {
+        console.error('خطا در شروع دوربین:', error);
+    }
+});
 
 // شروع دوربین
 async function startCamera() {
+    stopCamera(); // ابتدا دوربین قبلی را متوقف می‌کنیم
+    
+    const constraints = {
+        video: {
+            facingMode: facingMode,
+            width: { ideal: 1920 },
+            height: { ideal: 1080 }
+        },
+        audio: false
+    };
+    
     try {
-        const constraints = {
-            video: {
-                facingMode: facingMode,
-                width: { ideal: 1920 },
-                height: { ideal: 1080 }
-            },
-            audio: false
-        };
-        
         const stream = await navigator.mediaDevices.getUserMedia(constraints);
-        currentStream = stream;
-        video.srcObject = stream;
-        currentZoom = 1;
-        updateZoomDisplay();
-        hidePermissionRequest();
-        
-        // تنظیم اندازه کانواس هنگام بارگذاری ویدیو
-        video.onloadedmetadata = () => {
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-        };
+        handleSuccess(stream);
     } catch (err) {
-        console.error("خطا در دسترسی به دوربین: ", err);
-        showPermissionRequest();
+        handleError(err);
     }
 }
 
+function handleSuccess(stream) {
+    currentStream = stream;
+    video.srcObject = stream;
+    currentZoom = 1;
+    updateZoomDisplay();
+    
+    // مخفی کردن پیام درخواست دسترسی
+    permissionRequest.style.display = 'none';
+    
+    video.onloadedmetadata = () => {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+    };
+}
+
+function handleError(error) {
+    console.error('خطا در دسترسی به دوربین:', error);
+    // نمایش پیام خطا به کاربر
+    permissionRequest.querySelector('h2').textContent = 'خطا در دسترسی به دوربین. لطفاً مجوزها را بررسی کنید.';
+    permissionRequest.style.display = 'flex';
+}
+
+// بقیه توابع بدون تغییر باقی می‌مانند...
 // توقف دوربین
 function stopCamera() {
     if (currentStream) {
@@ -75,7 +88,6 @@ function stopCamera() {
 
 // تغییر دوربین
 function switchCamera() {
-    stopCamera();
     isFrontCamera = !isFrontCamera;
     facingMode = isFrontCamera ? 'user' : 'environment';
     startCamera();
@@ -136,32 +148,29 @@ function closePreview() {
 }
 
 // رویدادها
-requestPermissionBtn.addEventListener('click', startCamera);
 zoomInBtn.addEventListener('click', () => {
     if (currentZoom < maxZoom) {
         currentZoom += 1;
         applyZoom();
     }
 });
+
 zoomOutBtn.addEventListener('click', () => {
     if (currentZoom > 1) {
         currentZoom -= 1;
         applyZoom();
     }
 });
+
 zoomSlider.addEventListener('input', () => {
     currentZoom = parseInt(zoomSlider.value);
     applyZoom();
 });
+
 captureBtn.addEventListener('click', capturePhoto);
 switchCameraBtn.addEventListener('click', switchCamera);
 savePhotoBtn.addEventListener('click', savePhoto);
 closePreviewBtn.addEventListener('click', closePreview);
-
-// شروع خودکار دوربین (بعد از تأیید کاربر)
-document.addEventListener('DOMContentLoaded', () => {
-    showPermissionRequest();
-});
 
 // توقف دوربین هنگام بستن صفحه
 window.addEventListener('beforeunload', stopCamera);
