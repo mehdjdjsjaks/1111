@@ -2,199 +2,52 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>دوربین با زوم پیشرفته</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f0f0f0;
-            margin: 0;
-            padding: 20px;
-        }
-        
-        .camera-container {
-            position: relative;
-            max-width: 800px;
-            margin: 20px auto;
-            border: 3px solid #333;
-            border-radius: 10px;
-            overflow: hidden;
-            background-color: #000;
-        }
-        
-        #video {
-            width: 100%;
-            display: block;
-            transform-origin: center center;
-            transition: transform 0.3s;
-        }
-        
-        .controls {
-            margin: 20px auto;
-            max-width: 800px;
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        
-        button:hover {
-            background-color: #45a049;
-        }
-        
-        .zoom-level {
-            margin-top: 10px;
-            font-size: 18px;
-            font-weight: bold;
-        }
-        
-        #canvas {
-            display: none;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>دوربین حرفه‌ای با زوم 100x</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>دوربین با قابلیت زوم پیشرفته</h1>
+    <div class="header">
+        <h1>دوربین حرفه‌ای با زوم 100x</h1>
+    </div>
     
     <div class="camera-container">
         <video id="video" autoplay playsinline></video>
         <canvas id="canvas"></canvas>
+        
+        <div class="overlay">
+            <div class="top-controls">
+                <button id="switchCamera">↻</button>
+            </div>
+            
+            <div class="bottom-controls">
+                <div class="zoom-controls">
+                    <button id="zoomOut">-</button>
+                    <input type="range" id="zoomSlider" class="zoom-slider" min="1" max="100" step="1" value="1">
+                    <button id="zoomIn">+</button>
+                </div>
+                
+                <button id="capture">📷</button>
+            </div>
+        </div>
+        
+        <div class="zoom-display" id="zoomDisplay">1x</div>
+        <div class="flash" id="flash"></div>
     </div>
     
-    <div class="zoom-level">
-        سطح زوم: <span id="zoomValue">1x</span>
+    <div class="permission-request" id="permissionRequest">
+        <h2>برای استفاده از دوربین، لطفاً مجوز دسترسی را تأیید کنید</h2>
+        <button class="permission-btn" id="requestPermission">تأیید دسترسی</button>
     </div>
     
-    <div class="controls">
-        <button id="startButton">شروع دوربین</button>
-        <button id="zoomIn">زوم (+)</button>
-        <button id="zoomOut">زوم (-)</button>
-        <button id="capture">عکس بگیر</button>
+    <div class="fullscreen-preview" id="fullscreenPreview">
+        <img class="preview-image" id="previewImage" src="" alt="Preview">
+        <div class="preview-controls">
+            <button id="savePhoto">💾 ذخیره</button>
+            <button id="closePreview">✕ بستن</button>
+        </div>
     </div>
     
-    <script>
-        // متغیرهای全局
-        let video = document.getElementById('video');
-        let canvas = document.getElementById('canvas');
-        let ctx = canvas.getContext('2d');
-        let currentStream = null;
-        let currentZoom = 1;
-        const maxZoom = 5;
-        
-        // عناصر کنترل
-        const zoomInBtn = document.getElementById('zoomIn');
-        const zoomOutBtn = document.getElementById('zoomOut');
-        const startButton = document.getElementById('startButton');
-        const captureButton = document.getElementById('capture');
-        const zoomValue = document.getElementById('zoomValue');
-        
-        // شروع دوربین
-        startButton.addEventListener('click', function() {
-            if (currentStream) {
-                stopCamera();
-                startButton.textContent = 'شروع دوربین';
-            } else {
-                startCamera();
-                startButton.textContent = 'توقف دوربین';
-            }
-        });
-        
-        // زوم این
-        zoomInBtn.addEventListener('click', function() {
-            if (currentZoom < maxZoom) {
-                currentZoom += 0.5;
-                applyZoom();
-            }
-        });
-        
-        // زوم اوت
-        zoomOutBtn.addEventListener('click', function() {
-            if (currentZoom > 1) {
-                currentZoom -= 0.5;
-                applyZoom();
-            }
-        });
-        
-        // گرفتن عکس
-        captureButton.addEventListener('click', function() {
-            if (!currentStream) return;
-            
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            
-            // اعمال زوم روی کانواس
-            ctx.save();
-            ctx.translate(canvas.width/2, canvas.height/2);
-            ctx.scale(currentZoom, currentZoom);
-            ctx.translate(-canvas.width/2, -canvas.height/2);
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            ctx.restore();
-            
-            // ذخیره عکس
-            let image = canvas.toDataURL('image/png');
-            let link = document.createElement('a');
-            link.href = image;
-            link.download = 'عکس-دوربین.png';
-            link.click();
-        });
-        
-        // شروع دوربین
-        function startCamera() {
-            stopCamera();
-            
-            navigator.mediaDevices.getUserMedia({
-                video: {
-                    facingMode: 'environment', // استفاده از دوربین پشتی
-                    width: { ideal: 1920 },
-                    height: { ideal: 1080 }
-                },
-                audio: false
-            })
-            .then(function(stream) {
-                currentStream = stream;
-                video.srcObject = stream;
-                currentZoom = 1;
-                zoomValue.textContent = '1x';
-            })
-            .catch(function(err) {
-                console.error("خطا در دسترسی به دوربین: ", err);
-                alert("خطا در دسترسی به دوربین. لطفاً مجوزها را بررسی کنید.");
-            });
-        }
-        
-        // توقف دوربین
-        function stopCamera() {
-            if (currentStream) {
-                currentStream.getTracks().forEach(track => track.stop());
-                currentStream = null;
-                video.srcObject = null;
-            }
-        }
-        
-        // اعمال زوم
-        function applyZoom() {
-            if (!currentStream) return;
-            
-            zoomValue.textContent = currentZoom + 'x';
-            video.style.transform = `scale(${currentZoom})`;
-        }
-        
-        // توقف دوربین هنگام بستن صفحه
-        window.addEventListener('beforeunload', function() {
-            stopCamera();
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
